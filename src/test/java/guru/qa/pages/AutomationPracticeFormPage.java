@@ -1,6 +1,6 @@
 package guru.qa.pages;
 
-import com.codeborne.selenide.*;
+import com.codeborne.selenide.SelenideElement;
 import guru.qa.pages.components.CalendarComponent;
 
 import java.util.Date;
@@ -8,14 +8,15 @@ import java.util.Date;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static java.lang.String.format;
 
 public class AutomationPracticeFormPage {
     private static final String FORM_TITLE = "Student Registration Form",
-                                TABLE_TITLE = "Thanks for submitting the form";
-    private static String genderLocator = ("label[for=\"gender-radio-%d\"]"),
-                          hobbyLocator = ("label[for=\"hobbies-checkbox-%d\"]"),
-                          stateLocator = "#react-select-3-option-%d",
-                          cityLocator = "#react-select-4-option-%d";
+            TABLE_TITLE = "Thanks for submitting the form";
+    private static String genderLocator = "label[for='gender-radio-%d']",
+            hobbyLocator = "label[for='hobbies-checkbox-%d']",
+            stateLocator = "#react-select-3-option-%d",
+            cityLocator = "#react-select-4-option-%d";
     private static SelenideElement
             formTitle = $(".practice-form-wrapper"),
             firstNameInput = $("#firstName"),
@@ -34,6 +35,8 @@ public class AutomationPracticeFormPage {
 
     public static void openPage() {
         open("/automation-practice-form");
+        executeJavaScript("$('footer').remove()");
+        executeJavaScript("$('#fixedban').remove()");
         formTitle.shouldHave(text(FORM_TITLE));
     }
 
@@ -50,20 +53,18 @@ public class AutomationPracticeFormPage {
     }
 
     public static String selectGender(int option) {
-        $(String.format(genderLocator, option)).click();
-
-        return $(String.format(genderLocator, option)).text();
+        $(format(genderLocator, option)).click();
+        return $(format(genderLocator, option)).text();
     }
 
     public static void typeUserNumber(String value) {
         userNumberInput.setValue(value);
     }
 
-    public static String selectDate (Date birthDate) {
+    public static String selectDate(Date birthDate) {
         String fullDate;
-        calendar.setDate(String.format("%td", birthDate), String.format("%tB", birthDate), String.format("%tY", birthDate));
-        fullDate = String.format("%td %<tB,%<tY", birthDate);
-
+        calendar.setDate(format("%td", birthDate), format("%tB", birthDate), format("%tY", birthDate));
+        fullDate = format("%td %<tB,%<tY", birthDate);
         return fullDate;
     }
 
@@ -75,22 +76,20 @@ public class AutomationPracticeFormPage {
         return subject;
     }
 
-    public static String selectHobbies(boolean firstHobby, boolean secondHobby, boolean thirdHobby) {
+    public static String selectHobbies(boolean[] isHobby) {
+        if (isHobby.length != 3) {
+            throw new RuntimeException("Quantity of hobbies in testdata is wrong");
+        }
         String hobbies = "";
-        if (firstHobby) {
-            $(String.format(hobbyLocator, 1)).click();
-            hobbies += $(String.format(hobbyLocator, 1)).text() + ", ";
-        }
-        if (secondHobby) {
-            $(String.format(hobbyLocator, 2)).click();
-            hobbies += $(String.format(hobbyLocator, 2)).text() + ", ";
-        }
-        if (thirdHobby) {
-            $(String.format(hobbyLocator, 3)).click();
-            hobbies += " " +  $(String.format(hobbyLocator, 3)).text();
+
+        for (int i = 0; i < isHobby.length; i++) {
+            if (isHobby[i]) {
+                $(format(hobbyLocator, i + 1)).click();
+                hobbies += $(format(hobbyLocator, i + 1)).text() + ", ";
+            }
         }
         if (hobbies.endsWith(", ")) {
-            hobbies = hobbies.substring(0, hobbies.length()-2);
+            hobbies = hobbies.substring(0, hobbies.length() - 2);
         }
         return hobbies;
     }
@@ -106,11 +105,11 @@ public class AutomationPracticeFormPage {
     public static String selectStateAndCity(int stateNumber, int cityNumber) {
         String StateAndCity;
         stateInput.click();
-        StateAndCity = $(String.format(stateLocator, stateNumber)).text() + " ";
-        $(String.format(stateLocator, stateNumber)).scrollIntoView(false).click();
+        StateAndCity = $(format(stateLocator, stateNumber)).text() + " ";
+        $(format(stateLocator, stateNumber)).scrollIntoView(false).click();
         cityInput.click();
-        StateAndCity += $(String.format(cityLocator, cityNumber)).text();
-        $(String.format(cityLocator, cityNumber)).click();
+        StateAndCity += $(format(cityLocator, cityNumber)).text();
+        $(format(cityLocator, cityNumber)).click();
         return StateAndCity;
     }
 
