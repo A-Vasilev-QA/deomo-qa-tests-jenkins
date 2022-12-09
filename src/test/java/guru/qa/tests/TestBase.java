@@ -14,6 +14,7 @@ public class TestBase {
 
     @BeforeAll
     public static void setUp() {
+
         SelenideLogger.addListener("AllureSelenide", new AllureSelenide());
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
@@ -25,7 +26,7 @@ public class TestBase {
         Configuration.baseUrl = "https://demoqa.com";
         Configuration.timeout = 7500;
         Configuration.browserSize = "1920x1080";
-        Configuration.remote = "https://user1:1234@selenoid.autotests.cloud/wd/hub";
+        Configuration.remote = "http://159.223.228.37:4444/wd/hub";
     }
 
     @AfterEach
